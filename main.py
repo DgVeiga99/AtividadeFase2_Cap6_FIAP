@@ -192,23 +192,9 @@ def CalculoAprova(lista: list,ref: tuple) -> None:
     return resultado
 
 
-# Gera relatório de lote
-def GeraRelatorio(lote: str,ref: tuple) -> None:
-    lista = []
-    bd_comando.execute(f"SELECT * FROM sementes WHERE lote = '{lote}'")
-    tabela = bd_comando.fetchall()
+# Cria o relatório em TXT
+def RelatorioTXT(dados: list, result: list, ref: tuple) -> None:
 
-    for dt in tabela:
-        lista.append(dt)
-
-    # Converte os dados obtidos de lista + tupla para lista
-    lista = sorted(lista)
-    dados = list(lista[0])
-
-    # Chamada do cálculo para comparar os itens aprovados
-    result = CalculoAprova(dados,ref)
-
-    # Gera arquivo em txt
     arq = open(f"RelatorioLote{dados[1]}.txt", "w")
     arq.seek(0)
     arq.write("="*20 + "RELATÓRIO DE QUALIDADE" + "="*20 )
@@ -231,11 +217,30 @@ def GeraRelatorio(lote: str,ref: tuple) -> None:
     arq.write("\t5.Sanidade:{} %                -> {} conforme padrão\n".format(dados[7],result[4]))
     arq.write("\t6.Peso Mil sementes:{}g        -> {} conforme padrão\n".format(dados[8],result[5]))
     arq.close()
-
     # Apresenta para o usuário o relatório
     arq = open(f"RelatorioLote{busca3}.txt", "r")
     print(arq.read())
     arq.close()
+
+
+# Rotina para geração do relatório de lote
+def GeraRelatorio(lote: str,ref: tuple) -> None:
+    lista = []
+    bd_comando.execute(f"SELECT * FROM sementes WHERE lote = '{lote}'")
+    tabela = bd_comando.fetchall()
+
+    for dt in tabela:
+        lista.append(dt)
+
+    # Converte os dados obtidos de lista + tupla para lista
+    lista = sorted(lista)
+    dados = list(lista[0])
+
+    # Chamada do cálculo para comparar os itens aprovados
+    result = CalculoAprova(dados,ref)
+
+    #Chamada para realizar o relatorio txt
+    RelatorioTXT(dados,result,padrão)
 
 
 # Apresenta lista de todos os lotes registrados
